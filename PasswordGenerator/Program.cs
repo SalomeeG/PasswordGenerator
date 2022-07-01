@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace PasswordGenerator
 {
@@ -15,16 +14,17 @@ namespace PasswordGenerator
             }
 
             Console.WriteLine($"Hashed Password: {GeneratePasswordHashUsingSalt("pass", salt)}");
+
+            GC.Collect();
         }
 
         public static string GeneratePasswordHashUsingSalt(string passwordText, byte[] salt)
         {
             var iterate = 10000;
             var length = 36;
+            var pbkdf2 = new Rfc2898DeriveBytes(passwordText, salt, iterate);
 
-            var hash = Rfc2898DeriveBytes.Pbkdf2(passwordText, salt, iterate, HashAlgorithmName.SHA1, length);
-
-            return Convert.ToBase64String(hash);
+            return Convert.ToBase64String(pbkdf2.GetBytes(length));
         }
     }
 }
